@@ -1,120 +1,112 @@
-# BranAI Icon Preview Lab (Native macOS)
+# BranAI Icon Preview Lab
 
-A native macOS app (Swift + AppKit + WKWebView) for previewing SVG icons in multiple platform contexts and exporting deliverables.
+A lightweight open-source macOS tool to preview SVG icons in real UI contexts and export ready-to-use assets.
 
 ## Download
 
 - [Download DMG (Latest)](https://github.com/branbot6/Icon-preview/releases/latest/download/branai-icon-preview-lab-latest.dmg)
-- SHA256: [branai-icon-preview-lab-latest.dmg.sha256](https://github.com/branbot6/Icon-preview/releases/latest/download/branai-icon-preview-lab-latest.dmg.sha256)
-- Release page (optional): [GitHub Releases](https://github.com/branbot6/Icon-preview/releases/latest)
-- Release assets include:
-  - `*.dmg`
-  - `*.dmg.sha256`
+- [SHA256](https://github.com/branbot6/Icon-preview/releases/latest/download/branai-icon-preview-lab-latest.dmg.sha256)
+- [All Releases](https://github.com/branbot6/Icon-preview/releases/latest)
 
-Verify checksum:
+Verify download:
 
 ```bash
 shasum -a 256 "branai-icon-preview-lab-latest.dmg"
 ```
 
-## Features
-
-- Load SVG from native file picker or drag-and-drop
-- Preview icon appearance for:
-  - Favicon context
-  - Web logo + browser tab
-  - macOS app icon contexts
-  - iOS app icon contexts
-- Export **1024x1024 PNG** with native save dialog
-- Export **macOS DMG** (auto-generates `.icns` + app bundle)
-
-## Requirements
-
-- macOS 13+
-- Xcode Command Line Tools (Swift toolchain)
-
-## Quick Start
+## Quick Start (From Source)
 
 ```bash
-cd <repo-folder>
+git clone https://github.com/branbot6/Icon-preview.git
+cd Icon-preview
 swift build
 swift run IconPreviewLabNative
 ```
 
-## Build Installer (Local)
+## What It Does
+
+- Load SVG via native file picker or drag-and-drop
+- Preview icon appearance in multiple contexts
+- Favicon context
+- Web tab + logo context
+- macOS app icon scenes
+- iOS app icon scenes
+- Export 1024x1024 PNG (native save dialog)
+- Export macOS DMG from the current icon
+
+## Typical Workflow
+
+1. Open app
+2. Choose or drag an SVG
+3. Inspect icon in all preview panels
+4. Export PNG and/or DMG
+
+## Local Packaging
+
+Build `.app` and `.dmg` locally:
 
 ```bash
-cd <repo-folder>
 ./scripts/build_app.sh
 ```
 
-Output in `dist/`:
-- `Icon Preview Lab.app`
-- `Icon Preview Lab-<version>-native-arm64.dmg`
+Output:
 
-## GitHub Release Automation
+- `dist/Icon Preview Lab.app`
+- `dist/Icon Preview Lab-<version>-native-arm64.dmg`
+
+## Development
+
+Run app in dev mode:
+
+```bash
+./scripts/run.sh
+```
+
+## Known Notes
+
+- Current release assets are unsigned for now.
+- On some macOS setups, Gatekeeper may block first launch.
+- If needed, remove quarantine manually:
+
+```bash
+xattr -dr com.apple.quarantine ~/Downloads/branai-icon-preview-lab-latest.dmg
+```
+
+## Contributing
+
+Issues and PRs are welcome.
+
+Suggested PR format:
+
+1. Describe user impact
+2. Include screenshots/GIF for UI changes
+3. Keep changes scoped and testable
+
+## Release Automation
 
 - Workflow: `.github/workflows/release-dmg.yml`
-- Release template: `.github/RELEASE_TEMPLATE.md`
-- Changelog categories: `.github/release.yml`
-
-Automatic release build on tag push:
+- Tag release:
 
 ```bash
 git tag v1.2.0
 git push origin v1.2.0
 ```
 
-You can also run the workflow manually from GitHub Actions.
-
-## macOS Signing & Trust
-
-- For open-source testing, unsigned app/DMG can run, but users may see Gatekeeper warnings.
-- For public distribution, recommended:
-  - `Developer ID Application` certificate (Apple Developer Program)
-  - Code signing for `.app` and `.dmg`
-  - Notarization + stapling
-
-Signing/notarization skeleton script:
-
-```bash
-cd <repo-folder>
-SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
-APPLE_TEAM_ID="ABCDE12345" \
-NOTARYTOOL_PROFILE="your-notary-profile" \
-./scripts/sign_and_notarize.sh
-```
-
-Alternative auth (instead of `NOTARYTOOL_PROFILE`):
-- `APPLE_ID`
-- `APPLE_APP_SPECIFIC_PASSWORD`
-- `APPLE_TEAM_ID`
-
 ## Project Structure
 
 ```text
-native-macos/
+Icon-preview/
 ├─ Package.swift
 ├─ Sources/
 │  └─ IconPreviewLabNative/
 │     ├─ main.swift
 │     └─ Resources/
-│        ├─ index.html
-│        ├─ branai-logo.svg
-│        ├─ branai-icon.svg
-│        └─ ip-icon-1024.png
 └─ scripts/
    ├─ run.sh
    ├─ build_app.sh
    └─ sign_and_notarize.sh
 ```
 
-## Notes
+## License
 
-- The app uses a JS-to-native bridge (`window.desktopBridge`) for native file dialogs and export actions.
-- If you moved this project from another path and hit module-cache errors, clean once:
-
-```bash
-rm -rf .build
-swift build
-```
+License file is not added yet. Add a `LICENSE` file (for example MIT) before broader external contributions.
