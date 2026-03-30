@@ -2,6 +2,11 @@
 
 A native macOS app (Swift + AppKit + WKWebView) for previewing SVG icons in multiple platform contexts and exporting deliverables.
 
+## Download
+
+- Latest release: [Download from GitHub Releases](https://github.com/branbot6/Icon-preview/releases/latest)
+- If there is no release asset yet, use the local build steps below.
+
 ## Features
 
 - Load SVG from native file picker or drag-and-drop
@@ -17,6 +22,15 @@ A native macOS app (Swift + AppKit + WKWebView) for previewing SVG icons in mult
 
 - macOS 13+
 - Xcode Command Line Tools (Swift toolchain)
+
+## macOS Signing & Trust
+
+- For open-source testing, unsigned app/DMG can run, but users may see Gatekeeper warnings.
+- For public distribution, recommended:
+  - `Developer ID Application` certificate (Apple Developer Program)
+  - Code signing for `.app`
+  - Notarization + stapling for `.app` / `.dmg`
+- This gives users a much smoother install experience.
 
 ## Quick Start
 
