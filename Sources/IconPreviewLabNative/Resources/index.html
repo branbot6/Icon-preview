@@ -1,0 +1,1850 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Icon Preview Lab</title>
+    <style>
+      :root {
+        --color-bg-page: #ffffff;
+        --color-bg-section: rgb(245, 245, 247);
+        --color-text-primary: #000000;
+        --color-text-secondary: rgba(0, 0, 0, 0.7);
+        --color-divider: #ffffff;
+        --color-border-primary: #000000;
+        --font-ui: "SF Pro Text", "SF Pro Display", "Helvetica Neue", "PingFang SC", sans-serif;
+        --chrome-text-size: 12.5px;
+        --chrome-tracking: 0.04em;
+        --body-size: 14px;
+        --body-line-height: 1.45;
+        --display-weight: 400;
+        --ui-weight: 500;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background: var(--color-bg-page);
+        color: var(--color-text-primary);
+        font-family: var(--font-ui);
+        font-size: var(--body-size);
+        line-height: var(--body-line-height);
+        font-weight: var(--ui-weight);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      .chrome {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        height: 44px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.88);
+      }
+
+      .chrome-inner {
+        max-width: 1200px;
+        height: 100%;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .brand-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand {
+        font-size: var(--chrome-text-size);
+        font-weight: var(--ui-weight);
+        letter-spacing: var(--chrome-tracking);
+        text-transform: uppercase;
+      }
+
+      .brand-logo {
+        height: 24px;
+        width: auto;
+        display: block;
+      }
+
+      .meta-nav {
+        display: flex;
+        gap: 18px;
+        font-size: var(--chrome-text-size);
+        font-weight: var(--ui-weight);
+        letter-spacing: var(--chrome-tracking);
+        color: var(--color-text-secondary);
+      }
+
+      .meta-nav a {
+        color: inherit;
+        text-decoration: none;
+        opacity: 0.7;
+        transition: opacity 0.15s ease;
+      }
+
+      .meta-nav a:hover {
+        opacity: 1;
+      }
+
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 12px;
+      }
+
+      .section {
+        background: var(--color-bg-section);
+        border-radius: 0;
+        padding: 20px;
+      }
+
+      .section h2 {
+        margin: 0 0 14px;
+        font-weight: var(--ui-weight);
+        font-size: 22px;
+        letter-spacing: -0.015em;
+      }
+
+      .section p {
+        margin: 0;
+        color: var(--color-text-secondary);
+      }
+
+      .hero {
+        display: block;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      .native-file-input {
+        width: min(100%, 360px);
+        font-size: 14px;
+        font-family: var(--font-ui);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 0;
+        width: 100%;
+      }
+
+      button {
+        border: 1px solid var(--color-border-primary);
+        border-radius: 999px;
+        padding: 11px 16px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: var(--ui-weight);
+        font-family: var(--font-ui);
+        letter-spacing: 0.04em;
+        transition: color 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+      }
+
+      button.primary {
+        background: #000;
+        color: #fff;
+      }
+
+      button.primary:hover {
+        background: #fff;
+        color: #000;
+      }
+
+      button.secondary {
+        background: transparent;
+        color: #000;
+      }
+
+      button.secondary:hover {
+        background: #000;
+        color: #fff;
+      }
+
+      button:disabled {
+        opacity: 1;
+        cursor: not-allowed;
+      }
+
+      .meta {
+        margin-top: 12px;
+        font-size: 12.5px;
+        font-weight: var(--ui-weight);
+        letter-spacing: 0.02em;
+        color: var(--color-text-secondary);
+      }
+
+      .upload-zone {
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 0;
+        min-height: 190px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+        border-style: dashed;
+        border-width: 1.5px;
+        border-color: rgba(0, 0, 0, 0.2);
+      }
+
+      .upload-zone.dragover {
+        background: #f7f7f8;
+        border-color: #000;
+      }
+
+      .upload-hint {
+        margin-top: 0;
+        font-size: 13px;
+        letter-spacing: 0.02em;
+        color: var(--color-text-secondary);
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .favicon-layout {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 16px;
+      }
+
+      .favicon-layout .row {
+        flex: 0 0 auto;
+      }
+
+      .favicon-controls {
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        padding: 14px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .favicon-controls-title {
+        font-size: 12.5px;
+        font-weight: var(--ui-weight);
+        letter-spacing: 0.04em;
+        color: var(--color-text-secondary);
+        text-transform: uppercase;
+      }
+
+      .color-value {
+        margin-top: -4px;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.58);
+        letter-spacing: 0.02em;
+      }
+
+      .bg-picker {
+        width: 100%;
+        height: 30px;
+        border: 1px solid rgba(0, 0, 0, 0.18);
+        border-radius: 6px;
+        background: #fff;
+        padding: 1px 2px;
+        cursor: pointer;
+      }
+
+      .swatches {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .swatch {
+        width: 22px;
+        height: 24px;
+        border: 1px solid rgba(0, 0, 0, 0.16);
+        border-radius: 999px;
+        cursor: pointer;
+        background: transparent;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      }
+
+      .swatch:hover {
+        transform: translateY(-1px);
+      }
+
+      .swatch.active {
+        border-color: #111111;
+        box-shadow: 0 0 0 1px #111111 inset;
+      }
+
+      .chip {
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 16px;
+        padding: 10px;
+        min-width: 110px;
+        display: grid;
+        justify-items: center;
+        gap: 8px;
+      }
+
+      .favicon-chip {
+        background: #ffffff;
+      }
+
+      .caption {
+        font-size: 12.5px;
+        font-weight: var(--ui-weight);
+        letter-spacing: 0.02em;
+        color: var(--color-text-secondary);
+        text-align: center;
+      }
+
+      .preview {
+        width: 60px;
+        height: 60px;
+        border-radius: 0;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        background: #fbfbfc;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+      }
+
+      .preview.dark {
+        background: #161618;
+      }
+
+      .favicon.preview {
+        border: none;
+        background: transparent;
+        overflow: visible;
+      }
+
+      .preview img,
+      .tab-icon img,
+      .brand-icon img,
+      .badge-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .browser {
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.14);
+        background: #fff;
+      }
+
+      .chrome-strip {
+        background: linear-gradient(180deg, #e9edf4 0%, #e5e9f1 100%);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+
+      .chrome-tabs {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        padding: 7px 10px 0;
+      }
+
+      .window-controls {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-right: 6px;
+        padding-bottom: 8px;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+      }
+
+      .dot.red {
+        background: #ff5f57;
+      }
+
+      .dot.yellow {
+        background: #febc2e;
+      }
+
+      .dot.green {
+        background: #28c840;
+      }
+
+      .tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px 7px;
+        font-size: 11.5px;
+        font-weight: var(--ui-weight);
+        color: #465168;
+        border: 1px solid transparent;
+        border-bottom: none;
+        max-width: 220px;
+        position: relative;
+      }
+
+      .tab.active {
+        background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+        border-color: rgba(0, 0, 0, 0.12);
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.9) inset;
+        color: #2f3b55;
+      }
+
+      .tab.inactive {
+        background: rgba(225, 231, 241, 0.9);
+        border-top-left-radius: 9px;
+        border-top-right-radius: 9px;
+        color: rgba(70, 81, 104, 0.76);
+      }
+
+      .tab-label {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .tab-icon {
+        width: 16px;
+        height: 16px;
+        flex: 0 0 16px;
+      }
+
+      .chrome-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 10px;
+        background: #f7f9fc;
+        border-top: 1px solid rgba(255, 255, 255, 0.8);
+      }
+
+      .toolbar-btn {
+        width: 22px;
+        height: 22px;
+        display: grid;
+        place-items: center;
+        color: #6a7387;
+        font-size: 11px;
+        border-radius: 999px;
+      }
+
+      .toolbar-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      .address {
+        flex: 1;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        background: #ffffff;
+        padding: 6px 10px;
+        font-size: 12px;
+        color: #5f697d;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border-radius: 999px;
+      }
+
+      .site {
+        padding: 18px;
+        min-height: 160px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+      }
+
+      .site-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand-icon {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: transparent;
+        overflow: visible;
+        display: grid;
+        place-items: center;
+      }
+
+      .brand-name {
+        font-size: 28px;
+        font-weight: var(--display-weight);
+        letter-spacing: -0.025em;
+      }
+
+      .site-copy {
+        margin-top: 12px;
+        color: var(--color-text-secondary);
+        font-size: var(--body-size);
+      }
+
+      .platform-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 12px;
+      }
+
+      .scene-card {
+        background: #f6f7fa;
+        border: none;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 10px 24px rgba(16, 24, 40, 0.08), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+      }
+
+      #section-macos .scene-card,
+      #section-ios .scene-card {
+        border: none !important;
+      }
+
+      .scene-canvas {
+        height: 188px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .scene-label {
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 9px 11px;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.62);
+      }
+
+      .mac-wallpaper {
+        background: radial-gradient(circle at 14% 20%, #edf3ff 0%, #ceddf9 30%, #90a8d2 62%, #5d739f 100%);
+      }
+
+      .mac-finder-bg {
+        background: radial-gradient(circle at 8% 12%, #f9fbff 0%, #e9effa 46%, #cfd8eb 100%);
+      }
+
+      .mac-spotlight-bg {
+        background: radial-gradient(circle at 78% 8%, #eef3ff 0%, #c8d5ec 50%, #9faec9 100%);
+      }
+
+      .ios-home-bg {
+        background: radial-gradient(circle at 12% 6%, #8fb4ff 0%, #6f8df2 40%, #805fd8 66%, #b46db8 100%);
+      }
+
+      .ios-folder-bg {
+        background: radial-gradient(circle at 14% 10%, #9ab8ff 0%, #7e9ff1 46%, #6688d5 100%);
+      }
+
+      .ios-search-bg {
+        background: radial-gradient(circle at 78% 6%, #a7bef2 0%, #8aa0df 48%, #6f84bf 100%);
+      }
+
+      .dock-strip {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 12px;
+        height: 66px;
+        border-radius: 19px;
+        background: rgba(246, 249, 255, 0.58);
+        backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        box-shadow: 0 14px 30px rgba(21, 35, 62, 0.28);
+      }
+
+      .dock-strip .app-icon-shell {
+        flex: 0 0 auto;
+      }
+
+      .dock-strip .app-icon-shell.hero {
+        width: 34px;
+        height: 34px;
+        transform: translateY(-1px);
+      }
+
+      .finder-window {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        top: 16px;
+        bottom: 16px;
+        background: #f7f9fd;
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 16px 34px rgba(16, 24, 40, 0.16);
+      }
+
+      .finder-toolbar {
+        height: 30px;
+        background: linear-gradient(180deg, #f6f8fc 0%, #eceff7 100%);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        position: relative;
+      }
+
+      .finder-toolbar::before {
+        content: "";
+        position: absolute;
+        left: 8px;
+        top: 7px;
+        width: 34px;
+        height: 10px;
+        background: radial-gradient(circle at 5px 5px, #ff5f57 0 4px, transparent 4px),
+          radial-gradient(circle at 17px 5px, #febc2e 0 4px, transparent 4px),
+          radial-gradient(circle at 29px 5px, #28c840 0 4px, transparent 4px);
+      }
+
+      .finder-body {
+        display: grid;
+        grid-template-columns: 66px 1fr;
+        height: calc(100% - 30px);
+      }
+
+      .finder-sidebar {
+        border-right: 1px solid rgba(0, 0, 0, 0.07);
+        background: linear-gradient(180deg, #f2f5fb 0%, #eef2fa 100%);
+        position: relative;
+      }
+
+      .finder-sidebar::before {
+        content: "";
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        top: 10px;
+        bottom: 10px;
+        background: repeating-linear-gradient(
+          to bottom,
+          rgba(130, 145, 173, 0.36) 0 4px,
+          transparent 4px 12px
+        );
+      }
+
+      .finder-grid {
+        padding: 10px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px 14px;
+        justify-items: center;
+        align-items: start;
+      }
+
+      .spotlight-box {
+        position: absolute;
+        left: 22px;
+        right: 22px;
+        top: 40px;
+        background: rgba(255, 255, 255, 0.86);
+        border: none;
+        border-radius: 18px;
+        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
+        backdrop-filter: blur(16px);
+        overflow: hidden;
+      }
+
+      .spotlight-search {
+        height: 38px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.55);
+      }
+
+      .spotlight-result {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+      }
+
+      .ios-grid {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        top: 34px;
+        bottom: 58px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        align-content: start;
+        gap: 8px 10px;
+        justify-items: center;
+        align-items: start;
+      }
+
+      .ios-dock {
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        bottom: 10px;
+        height: 42px;
+        border-radius: 15px;
+        background: rgba(250, 252, 255, 0.32);
+        border: none;
+        backdrop-filter: blur(12px);
+      }
+
+      .ios-dock-icons {
+        position: absolute;
+        left: 30px;
+        right: 30px;
+        bottom: 15px;
+        height: 32px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        justify-items: center;
+        align-items: center;
+        pointer-events: none;
+      }
+
+      .folder-frame {
+        position: absolute;
+        left: 32px;
+        right: 32px;
+        top: 34px;
+        bottom: 24px;
+        border-radius: 22px;
+        background: rgba(248, 250, 255, 0.6);
+        border: none;
+        padding: 12px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        align-content: start;
+        gap: 9px 10px;
+        justify-items: center;
+        align-items: start;
+        backdrop-filter: blur(10px);
+      }
+
+      .ios-search-bar {
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        top: 10px;
+        height: 26px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.56);
+        border: none;
+      }
+
+      .ios-search-result {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        top: 44px;
+        bottom: 18px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.86);
+        border: none;
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .ios-status {
+        position: absolute;
+        top: 8px;
+        left: 10px;
+        right: 10px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 9px;
+        color: rgba(255, 255, 255, 0.92);
+        letter-spacing: 0.01em;
+      }
+
+      .ios-notch {
+        width: 56px;
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(8, 10, 14, 0.65);
+      }
+
+      .ios-home-indicator {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 5px;
+        width: 74px;
+        height: 3.5px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.86);
+      }
+
+      .app-icon-shell {
+        width: 38px;
+        height: 38px;
+        border-radius: 24%;
+        border: 0.5px solid rgba(255, 255, 255, 0.72);
+        background: #f4f7ff;
+        display: grid;
+        place-items: center;
+        box-shadow: 0 5px 10px rgba(8, 18, 34, 0.14), 0 0 0 1px rgba(255, 255, 255, 0.56) inset;
+      }
+
+      .app-icon-shell.ios {
+        border-radius: 28%;
+      }
+
+      .app-icon-shell.hero {
+        width: 36px;
+        height: 36px;
+      }
+
+      .app-icon-shell.small {
+        width: 24px;
+        height: 24px;
+        border-radius: 24%;
+      }
+
+      .app-icon-shell.tiny {
+        width: 21px;
+        height: 21px;
+        border-radius: 24%;
+      }
+
+      .app-icon-shell .glyph {
+        width: 72%;
+        height: 72%;
+        display: grid;
+        place-items: center;
+        line-height: 0;
+      }
+
+      .app-icon-shell.uploaded-icon-shell {
+        border: none !important;
+        box-shadow: none !important;
+        overflow: hidden;
+      }
+
+      .app-icon-shell.uploaded-icon-shell .glyph {
+        width: 100%;
+        height: 100%;
+      }
+
+      .app-icon-shell .glyph img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center center;
+      }
+
+      .dummy-glyph {
+        width: 70%;
+        height: 70%;
+        border-radius: 24%;
+        background: radial-gradient(circle at 30% 20%, #d8e1f4 0%, #92a0bb 48%, #6f7a93 100%);
+      }
+
+      .empty {
+        background: #fff;
+        border: 1px dashed rgba(0, 0, 0, 0.24);
+        color: var(--color-text-secondary);
+        border-radius: 16px;
+        min-height: 90px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 12px;
+        font-size: 13px;
+      }
+
+      .web1-footer {
+        margin-top: 12px;
+        user-select: none;
+        background: var(--color-bg-section);
+        border-radius: 0;
+        padding: 18px 20px 14px;
+      }
+
+      .footer-shell {
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        padding-top: 12px;
+      }
+
+      .footer-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .footer-brand {
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .footer-logo {
+        height: 28px;
+        width: auto;
+        display: block;
+      }
+
+      .footer-divider {
+        margin: 0 8px;
+        width: 1px;
+        height: 16px;
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      .footer-icon {
+        height: 20px;
+        width: 20px;
+        display: block;
+      }
+
+      .footer-contact {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .footer-contact a,
+      .footer-copyright,
+      .footer-legal a {
+        font-size: 12.5px;
+        font-weight: var(--ui-weight);
+        letter-spacing: 0.04em;
+        color: var(--color-text-secondary);
+      }
+
+      .footer-contact a,
+      .footer-legal a {
+        text-decoration: none;
+        opacity: 0.7;
+        transition: opacity 0.15s ease;
+      }
+
+      .footer-contact a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .footer-contact-icon {
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        flex: 0 0 16px;
+      }
+
+      .footer-contact a:hover,
+      .footer-legal a:hover {
+        opacity: 1;
+      }
+
+      .footer-bottom {
+        margin-top: 12px;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+        padding-top: 10px;
+      }
+
+      .footer-copyright {
+        opacity: 0.7;
+      }
+
+      .footer-legal {
+        margin-top: 6px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 16px;
+      }
+
+      @media (max-width: 980px) {
+        main {
+          padding: 14px;
+        }
+
+        .meta-nav {
+          display: none;
+        }
+
+        .brand-name {
+          font-size: 24px;
+        }
+
+        .favicon-layout {
+          flex-direction: column;
+        }
+
+        .footer-top {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .footer-legal {
+          gap: 12px;
+        }
+
+        .platform-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="chrome">
+      <div class="chrome-inner">
+        <div class="brand-wrap">
+          <div class="brand">Icon Preview Lab</div>
+          <img src="./branai-logo.svg" alt="BranAI logo" class="brand-logo" />
+        </div>
+        <nav class="meta-nav">
+          <a href="#section-favicon">Favicon</a>
+          <a href="#section-web">Web</a>
+          <a href="#section-macos">macOS</a>
+          <a href="#section-ios">iOS</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="stack">
+        <section class="section hero">
+          <div id="uploadZone" class="upload-zone">
+            <input
+              id="svgInput"
+              class="native-file-input"
+              type="file"
+              accept=".svg,image/svg+xml"
+            />
+            <div class="actions">
+              <button id="chooseFile" class="primary" type="button">Choose File</button>
+              <button id="downloadPng" class="secondary" disabled>Export 1024 PNG</button>
+              <button id="downloadMacDmg" class="secondary" disabled>Export macOS DMG</button>
+              <button id="reset" class="secondary">Reset</button>
+            </div>
+            <div class="upload-hint">or drag and drop your SVG here</div>
+            <div id="fileName" class="meta">Current file: none</div>
+          </div>
+        </section>
+
+        <section id="section-favicon" class="section">
+          <h2>Favicon Preview</h2>
+          <div class="favicon-layout">
+            <div id="faviconRow" class="row">
+              <div class="empty">Upload an SVG to start previewing</div>
+            </div>
+            <aside class="favicon-controls">
+              <div class="favicon-controls-title">Background</div>
+              <input id="faviconBgPicker" class="bg-picker" type="color" value="#ffffff" />
+              <div id="faviconColorValue" class="color-value">#FFFFFF</div>
+              <div id="faviconSwatches" class="swatches">
+                <button class="swatch" type="button" data-color="#ffffff" style="background:#ffffff"></button>
+                <button class="swatch" type="button" data-color="#f5f5f7" style="background:#f5f5f7"></button>
+                <button class="swatch" type="button" data-color="#dbe7ff" style="background:#dbe7ff"></button>
+                <button class="swatch" type="button" data-color="#8b6b6b" style="background:#8b6b6b"></button>
+                <button class="swatch" type="button" data-color="#222222" style="background:#222222"></button>
+                <button class="swatch" type="button" data-color="#000000" style="background:#000000"></button>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section id="section-web" class="section">
+          <h2>Web Logo + Browser Tab</h2>
+          <div class="browser">
+            <div class="chrome-strip">
+              <div class="chrome-tabs">
+                <div class="window-controls" aria-hidden="true">
+                  <span class="dot red"></span>
+                  <span class="dot yellow"></span>
+                  <span class="dot green"></span>
+                </div>
+                <div class="tab active">
+                  <div id="tabIcon" class="tab-icon"></div>
+                  <span class="tab-label">My Brand</span>
+                </div>
+                <div class="tab inactive">
+                  <span class="tab-label">New Tab</span>
+                </div>
+              </div>
+              <div class="chrome-toolbar">
+                <span class="toolbar-btn" aria-hidden="true">◀</span>
+                <span class="toolbar-btn" aria-hidden="true">▶</span>
+                <span class="toolbar-btn" aria-hidden="true">⟳</span>
+                <div class="address">https://yourbrand.com</div>
+                <span class="toolbar-btn" aria-hidden="true">☆</span>
+              </div>
+            </div>
+            <div class="site web-bg-target">
+              <div class="site-header">
+                <div id="siteLogo" class="brand-icon"></div>
+                <div class="brand-name">Your Brand</div>
+              </div>
+              <p class="site-copy">Check recognition and sharpness for both navigation logo and browser tab icon at smaller sizes.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="section-macos" class="section">
+          <h2>macOS App Icon Preview</h2>
+          <div id="macRow" class="platform-grid">
+            <div class="empty">Upload an SVG to start previewing</div>
+          </div>
+        </section>
+
+        <section id="section-ios" class="section">
+          <h2>iOS App Icon Preview</h2>
+          <div id="iosRow" class="platform-grid">
+            <div class="empty">Upload an SVG to start previewing</div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="web1-footer" id="contact">
+        <div class="footer-shell">
+          <div class="footer-top">
+            <div class="footer-brand" aria-label="BranAI brand">
+              <img src="./branai-logo.svg" alt="BranAI logo" class="footer-logo" />
+              <span class="footer-divider" aria-hidden="true"></span>
+              <img src="./branai-icon.svg" alt="BranAI icon" class="footer-icon" />
+            </div>
+            <div class="footer-contact">
+              <a href="mailto:hello@branai.org">
+                <svg class="footer-contact-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 6h16v12H4z" stroke="currentColor" stroke-width="1.75" />
+                  <path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.75" />
+                </svg>
+                <span>hello@branai.org</span>
+              </a>
+              <a href="https://github.com/Branbot6" target="_blank" rel="noreferrer">
+                <svg class="footer-contact-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M9 18c-4 1.3-4-2-5.5-2M14.5 21v-3.1c0-1 .1-1.4-.5-2 2.8-.3 5.7-1.4 5.7-6.2 0-1.4-.5-2.5-1.3-3.4.1-.3.6-1.7-.1-3.5 0 0-1.1-.3-3.6 1.3a12.2 12.2 0 0 0-6.5 0C5.7 2.5 4.6 2.8 4.6 2.8c-.7 1.8-.2 3.2-.1 3.5-.8.9-1.3 2-1.3 3.4 0 4.8 2.9 5.9 5.7 6.2-.4.4-.6.9-.6 1.8V21"
+                    stroke="currentColor"
+                    stroke-width="1.75"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <span>Branbot6</span>
+              </a>
+              <a href="https://www.linkedin.com/in/brandon-yang-branai" target="_blank" rel="noreferrer">
+                <svg class="footer-contact-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M2 9h4v12H2z" stroke="currentColor" stroke-width="1.75" />
+                  <circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="1.75" />
+                </svg>
+                <span>brandon-yang-branai</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="footer-bottom">
+            <div class="footer-copyright">Copyright © 2026 BranAI. All rights reserved.</div>
+            <nav class="footer-legal" aria-label="Legal links">
+              <a href="#" aria-label="Privacy Policy">Privacy Policy</a>
+              <a href="#" aria-label="Use of Cookies">Use of Cookies</a>
+              <a href="#" aria-label="Terms of Use">Terms of Use</a>
+              <a href="#" aria-label="Legal">Legal</a>
+              <a href="#" aria-label="Site Map">Site Map</a>
+            </nav>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <script>
+      const svgInput = document.getElementById("svgInput");
+      const uploadZone = document.getElementById("uploadZone");
+      const faviconRow = document.getElementById("faviconRow");
+      const faviconBgPicker = document.getElementById("faviconBgPicker");
+      const faviconColorValue = document.getElementById("faviconColorValue");
+      const faviconSwatches = document.getElementById("faviconSwatches");
+      const macRow = document.getElementById("macRow");
+      const iosRow = document.getElementById("iosRow");
+      const tabIcon = document.getElementById("tabIcon");
+      const siteLogo = document.getElementById("siteLogo");
+      const chooseFileBtn = document.getElementById("chooseFile");
+      const downloadPng = document.getElementById("downloadPng");
+      const downloadMacDmg = document.getElementById("downloadMacDmg");
+      const resetBtn = document.getElementById("reset");
+      const fileNameEl = document.getElementById("fileName");
+      const meta = document.getElementById("meta");
+      const bridge = window.desktopBridge || null;
+
+      let currentDataUrl = "";
+      let currentFilename = "icon";
+      let currentObjectUrl = "";
+      let faviconBgColor = "#ffffff";
+
+      function setStatus(message, isError = false, showAlert = false) {
+        if (meta) {
+          meta.textContent = message;
+          meta.style.color = isError ? "#b00020" : "";
+        }
+        if (showAlert && isError) {
+          alert(message);
+        }
+      }
+
+      function setFileName(name) {
+        if (!fileNameEl) return;
+        fileNameEl.textContent = name ? `Current file: ${name}` : "Current file: none";
+      }
+
+      const BUILD_TAG = "build-2026-03-30-001";
+      // Feature-gated bridge flags let the same UI work in browser and desktop.
+      const hasDesktopBridge = Boolean(bridge && bridge.isDesktop);
+      const hasNativeFilePicker = Boolean(
+        hasDesktopBridge && typeof bridge.pickSvgFile === "function"
+      );
+      const hasNativePngExport = Boolean(
+        hasDesktopBridge && typeof bridge.exportPng === "function"
+      );
+      const hasNativeDmgExport = Boolean(
+        hasDesktopBridge && typeof bridge.exportMacDmg === "function"
+      );
+
+      function validateSvgText(text) {
+        if (!text || typeof text !== "string") return false;
+        return /<svg[\s>]/i.test(text);
+      }
+
+      function syncFaviconColorUI() {
+        faviconColorValue.textContent = faviconBgColor.toUpperCase();
+        const swatches = faviconSwatches.querySelectorAll(".swatch");
+        swatches.forEach((swatch) => {
+          const color = (swatch.dataset.color || "").toLowerCase();
+          swatch.classList.toggle("active", color === faviconBgColor.toLowerCase());
+        });
+      }
+
+      function clearObjectUrl() {
+        if (currentObjectUrl) {
+          URL.revokeObjectURL(currentObjectUrl);
+          currentObjectUrl = "";
+        }
+      }
+
+      async function ingestSvgText({ text, name, size }) {
+        const isValidSvg = validateSvgText(text);
+        if (!isValidSvg) {
+          setStatus("Invalid file format. Please upload a valid SVG.", true, true);
+          return;
+        }
+
+        setStatus("Rendering preview...");
+        clearObjectUrl();
+        currentFilename = (name || "icon").replace(/\.svg$/i, "") || "icon";
+        setFileName(name || "icon.svg");
+        currentObjectUrl = URL.createObjectURL(new Blob([text], { type: "image/svg+xml" }));
+        currentDataUrl = currentObjectUrl;
+
+        renderFavicon();
+        renderWebLogo();
+        renderMac();
+        renderIOS();
+
+        setStatus(`Loaded: ${name || "icon.svg"} (${Math.ceil((size || text.length) / 1024)} KB)`);
+        downloadPng.disabled = false;
+        downloadMacDmg.disabled = !hasNativeDmgExport;
+      }
+
+      function createImage(size) {
+        const img = document.createElement("img");
+        img.src = currentDataUrl;
+        img.alt = "icon preview";
+        if (size) {
+          img.style.width = `${size}px`;
+          img.style.height = `${size}px`;
+        }
+        return img;
+      }
+
+      function createFaviconCell(size) {
+        const chip = document.createElement("div");
+        chip.className = "chip favicon-chip";
+        chip.style.background = faviconBgColor;
+
+        const light = document.createElement("div");
+        light.className = "preview favicon logo-bg-target";
+        light.style.width = "64px";
+        light.style.height = "64px";
+        light.style.background = faviconBgColor;
+        light.appendChild(createImage(size));
+
+        const label = document.createElement("div");
+        label.className = "caption";
+        label.textContent = `${size}px`;
+
+        chip.appendChild(light);
+        chip.appendChild(label);
+        return chip;
+      }
+
+      function applyFaviconBackground() {
+        const chips = faviconRow.querySelectorAll(".favicon-chip");
+        chips.forEach((el) => {
+          el.style.background = faviconBgColor;
+        });
+
+        const items = document.querySelectorAll(".logo-bg-target");
+        items.forEach((el) => {
+          el.style.background = faviconBgColor;
+        });
+
+        const webTargets = document.querySelectorAll(".web-bg-target");
+        webTargets.forEach((el) => {
+          el.style.background = faviconBgColor;
+        });
+
+        const platformTargets = document.querySelectorAll(".platform-bg-target");
+        platformTargets.forEach((el) => {
+          el.style.background = faviconBgColor;
+        });
+        syncFaviconColorUI();
+      }
+
+      function renderFavicon() {
+        faviconRow.innerHTML = "";
+        [16, 32, 48, 64].forEach((size) => {
+          faviconRow.appendChild(createFaviconCell(size));
+        });
+        applyFaviconBackground();
+      }
+
+      function renderWebLogo() {
+        tabIcon.innerHTML = "";
+        siteLogo.innerHTML = "";
+        tabIcon.classList.add("logo-bg-target");
+        tabIcon.style.background = faviconBgColor;
+        siteLogo.style.background = "transparent";
+
+        const tabImg = createImage();
+        tabImg.alt = "tab icon";
+        tabIcon.appendChild(tabImg);
+
+        const logoImg = createImage();
+        logoImg.alt = "site logo";
+        siteLogo.appendChild(logoImg);
+      }
+
+      function createUploadedAppIcon(platform = "mac", size = "hero") {
+        const shell = document.createElement("div");
+        shell.className = `app-icon-shell uploaded-icon-shell platform-bg-target ${platform} ${size}`;
+        shell.style.background = faviconBgColor;
+
+        const glyph = document.createElement("div");
+        glyph.className = "glyph";
+        glyph.appendChild(createImage());
+        shell.appendChild(glyph);
+        return shell;
+      }
+
+      function createDummyIcon(platform = "mac", size = "small") {
+        const shell = document.createElement("div");
+        shell.className = `app-icon-shell ${platform} ${size}`;
+        const glyph = document.createElement("div");
+        glyph.className = "dummy-glyph";
+        shell.appendChild(glyph);
+        return shell;
+      }
+
+      function createSceneCard(label, sceneClass) {
+        const card = document.createElement("div");
+        card.className = "scene-card";
+
+        const canvas = document.createElement("div");
+        canvas.className = `scene-canvas ${sceneClass}`;
+
+        const caption = document.createElement("div");
+        caption.className = "scene-label";
+        caption.textContent = label;
+
+        card.appendChild(canvas);
+        card.appendChild(caption);
+        return { card, canvas };
+      }
+
+      function renderMac() {
+        macRow.innerHTML = "";
+
+        const dockScene = createSceneCard("Dock (Dock Magnification)", "mac-wallpaper");
+        const dockStrip = document.createElement("div");
+        dockStrip.className = "dock-strip";
+        dockStrip.appendChild(createDummyIcon("mac", "small"));
+        dockStrip.appendChild(createDummyIcon("mac", "small"));
+        dockStrip.appendChild(createDummyIcon("mac", "small"));
+        dockStrip.appendChild(createUploadedAppIcon("mac", "hero"));
+        dockStrip.appendChild(createDummyIcon("mac", "small"));
+        dockStrip.appendChild(createDummyIcon("mac", "small"));
+        dockStrip.appendChild(createDummyIcon("mac", "small"));
+        dockScene.canvas.appendChild(dockStrip);
+        macRow.appendChild(dockScene.card);
+
+        const finderScene = createSceneCard("Finder (Window Context)", "mac-finder-bg");
+        const finderWindow = document.createElement("div");
+        finderWindow.className = "finder-window";
+        finderWindow.innerHTML =
+          '<div class="finder-toolbar"></div><div class="finder-body"><div class="finder-sidebar"></div><div class="finder-grid"></div></div>';
+        const finderGrid = finderWindow.querySelector(".finder-grid");
+        finderGrid.appendChild(createDummyIcon("mac", "small"));
+        finderGrid.appendChild(createUploadedAppIcon("mac", "small"));
+        finderGrid.appendChild(createDummyIcon("mac", "small"));
+        finderGrid.appendChild(createDummyIcon("mac", "small"));
+        finderGrid.appendChild(createDummyIcon("mac", "small"));
+        finderGrid.appendChild(createDummyIcon("mac", "small"));
+        finderScene.canvas.appendChild(finderWindow);
+        macRow.appendChild(finderScene.card);
+
+        const spotlightScene = createSceneCard("Spotlight (Top Result)", "mac-spotlight-bg");
+        const spotlightBox = document.createElement("div");
+        spotlightBox.className = "spotlight-box";
+        spotlightBox.innerHTML = '<div class="spotlight-search">Search apps</div><div class="spotlight-result"></div>';
+        const spotlightResult = spotlightBox.querySelector(".spotlight-result");
+        spotlightResult.appendChild(createUploadedAppIcon("mac", "hero"));
+        const text = document.createElement("div");
+        text.className = "caption";
+        text.textContent = "Your App";
+        spotlightResult.appendChild(text);
+        spotlightScene.canvas.appendChild(spotlightBox);
+        macRow.appendChild(spotlightScene.card);
+      }
+
+      function renderIOS() {
+        iosRow.innerHTML = "";
+
+        const homeScene = createSceneCard("Home Screen (Grid Context)", "ios-home-bg");
+        const status = document.createElement("div");
+        status.className = "ios-status";
+        status.innerHTML = '<span>9:41</span><span class="ios-notch"></span><span>5G &#9679;&#9679;&#9679;</span>';
+        homeScene.canvas.appendChild(status);
+        const iosGrid = document.createElement("div");
+        iosGrid.className = "ios-grid";
+        for (let i = 0; i < 16; i += 1) {
+          if (i === 6) {
+            iosGrid.appendChild(createUploadedAppIcon("ios", "small"));
+          } else {
+            iosGrid.appendChild(createDummyIcon("ios", "small"));
+          }
+        }
+        homeScene.canvas.appendChild(iosGrid);
+        const iosDock = document.createElement("div");
+        iosDock.className = "ios-dock";
+        homeScene.canvas.appendChild(iosDock);
+        const dockIcons = document.createElement("div");
+        dockIcons.className = "ios-dock-icons";
+        dockIcons.appendChild(createDummyIcon("ios", "small"));
+        dockIcons.appendChild(createDummyIcon("ios", "small"));
+        dockIcons.appendChild(createDummyIcon("ios", "small"));
+        dockIcons.appendChild(createDummyIcon("ios", "small"));
+        homeScene.canvas.appendChild(dockIcons);
+        const homeIndicator = document.createElement("div");
+        homeIndicator.className = "ios-home-indicator";
+        homeScene.canvas.appendChild(homeIndicator);
+        iosRow.appendChild(homeScene.card);
+
+        const folderScene = createSceneCard("Folder View (Inside Folder)", "ios-folder-bg");
+        const folderStatus = document.createElement("div");
+        folderStatus.className = "ios-status";
+        folderStatus.innerHTML = '<span>9:41</span><span class="ios-notch"></span><span>5G &#9679;&#9679;&#9679;</span>';
+        folderScene.canvas.appendChild(folderStatus);
+        const folderFrame = document.createElement("div");
+        folderFrame.className = "folder-frame";
+        for (let i = 0; i < 9; i += 1) {
+          if (i === 4) {
+            folderFrame.appendChild(createUploadedAppIcon("ios", "tiny"));
+          } else {
+            folderFrame.appendChild(createDummyIcon("ios", "tiny"));
+          }
+        }
+        folderScene.canvas.appendChild(folderFrame);
+        const folderIndicator = document.createElement("div");
+        folderIndicator.className = "ios-home-indicator";
+        folderScene.canvas.appendChild(folderIndicator);
+        iosRow.appendChild(folderScene.card);
+
+        const searchScene = createSceneCard("Spotlight Search (Result Card)", "ios-search-bg");
+        const searchStatus = document.createElement("div");
+        searchStatus.className = "ios-status";
+        searchStatus.innerHTML = '<span>9:41</span><span class="ios-notch"></span><span>5G &#9679;&#9679;&#9679;</span>';
+        searchScene.canvas.appendChild(searchStatus);
+        const searchBar = document.createElement("div");
+        searchBar.className = "ios-search-bar";
+        searchScene.canvas.appendChild(searchBar);
+        const searchResult = document.createElement("div");
+        searchResult.className = "ios-search-result";
+        searchResult.appendChild(createUploadedAppIcon("ios", "hero"));
+        const text = document.createElement("div");
+        text.className = "caption";
+        text.textContent = "Your App";
+        searchResult.appendChild(text);
+        searchScene.canvas.appendChild(searchResult);
+        const searchIndicator = document.createElement("div");
+        searchIndicator.className = "ios-home-indicator";
+        searchScene.canvas.appendChild(searchIndicator);
+        iosRow.appendChild(searchScene.card);
+      }
+
+      async function exportPng(size = 1024) {
+        if (!currentDataUrl) return;
+
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+
+        const img = new Image();
+        img.src = currentDataUrl;
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+
+        drawExportFrame(ctx, img, size, {
+          backgroundColor: faviconBgColor,
+        });
+
+        canvas.toBlob((blob) => {
+          if (!blob) return;
+          const downloadUrl = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = downloadUrl;
+          a.download = `${currentFilename}-${size}.png`;
+          a.click();
+          URL.revokeObjectURL(downloadUrl);
+        }, "image/png");
+      }
+
+      async function rasterizeToPngDataUrl(size = 1024) {
+        if (!currentDataUrl) return "";
+        const canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+
+        const img = new Image();
+        img.src = currentDataUrl;
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+
+        drawExportFrame(ctx, img, size, {
+          backgroundColor: faviconBgColor,
+        });
+        return canvas.toDataURL("image/png");
+      }
+
+      function drawExportFrame(ctx, img, size, options = {}) {
+        let bg = "#ffffff";
+        try {
+          if (options.backgroundColor && typeof options.backgroundColor === "string") {
+            ctx.fillStyle = options.backgroundColor;
+            bg = ctx.fillStyle;
+          }
+        } catch {
+          bg = "#ffffff";
+        }
+
+        const srcW = Number(img.naturalWidth || img.width || size) || size;
+        const srcH = Number(img.naturalHeight || img.height || size) || size;
+        const scale = Math.min(size / srcW, size / srcH);
+        const drawW = srcW * scale;
+        const drawH = srcH * scale;
+        const drawX = (size - drawW) / 2;
+        const drawY = (size - drawH) / 2;
+
+        ctx.clearRect(0, 0, size, size);
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, size, size);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, drawX, drawY, drawW, drawH);
+      }
+
+      function resetView() {
+        tabIcon.innerHTML = "";
+        siteLogo.innerHTML = "";
+        faviconRow.innerHTML = '<div class="empty">Upload an SVG to start previewing</div>';
+        macRow.innerHTML = '<div class="empty">Upload an SVG to start previewing</div>';
+        iosRow.innerHTML = '<div class="empty">Upload an SVG to start previewing</div>';
+        setStatus("No file selected");
+        setFileName("");
+        downloadPng.disabled = true;
+        downloadMacDmg.disabled = true;
+      }
+
+      function readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+          reader.onerror = () => reject(new Error("FileReader failed"));
+          reader.readAsText(file, "utf-8");
+        });
+      }
+
+      function isLikelySvgFile(file) {
+        if (!file) return false;
+        const byName = /\.svg$/i.test(file.name || "");
+        const byMime = /svg/i.test(file.type || "");
+        return byName || byMime;
+      }
+
+      async function handleSelectedFile(file) {
+        if (!file) {
+          setStatus("No file selected");
+          setFileName("");
+          return;
+        }
+        if (!isLikelySvgFile(file)) {
+          setStatus("Please choose a valid SVG file (.svg).", true, true);
+          return;
+        }
+        try {
+          const text = await readFileAsText(file);
+          await ingestSvgText({ text, name: file.name, size: file.size });
+        } catch (error) {
+          setStatus(`Load failed: ${error.message || "Unknown error"}`, true, true);
+        }
+      }
+
+      async function handleSvgInputChange(event) {
+        try {
+          const file = event && event.target && event.target.files && event.target.files[0];
+          if (!file) {
+            setStatus("No file selected");
+            setFileName("");
+            return;
+          }
+          setStatus(`File selected: ${file.name}. Loading...`);
+          await handleSelectedFile(file);
+        } catch (error) {
+          setStatus(`Picker failed: ${error.message || "Unknown error"}`, true, true);
+        } finally {
+          if (svgInput) svgInput.value = "";
+        }
+      }
+
+      if (svgInput) {
+        svgInput.addEventListener("change", handleSvgInputChange);
+      }
+
+      if (chooseFileBtn) {
+        chooseFileBtn.addEventListener("click", async () => {
+          // Desktop app: use native panel first for a more reliable picker UX.
+          if (hasNativeFilePicker) {
+            try {
+              setStatus("Opening file picker...");
+              const result = await bridge.pickSvgFile();
+              if (!result || result.canceled) {
+                setStatus("File selection canceled.");
+                return;
+              }
+              await ingestSvgText({
+                text: result.text || "",
+                name: result.name || "icon.svg",
+                size: Number(result.size || 0),
+              });
+              return;
+            } catch (error) {
+              setStatus(`Picker failed: ${error.message || "Unknown error"}`, true, true);
+              return;
+            }
+          }
+          // Browser fallback: use hidden <input type="file">.
+          if (svgInput) svgInput.click();
+        });
+      }
+
+      if (faviconBgPicker) {
+        faviconBgPicker.addEventListener("input", (event) => {
+          faviconBgColor = event.target.value || "#ffffff";
+          applyFaviconBackground();
+        });
+      }
+
+      if (faviconSwatches) {
+        faviconSwatches.addEventListener("click", (event) => {
+          const btn = event.target.closest(".swatch");
+          if (!btn) return;
+          const color = btn.dataset.color || "#ffffff";
+          faviconBgColor = color;
+          if (faviconBgPicker) faviconBgPicker.value = color;
+          applyFaviconBackground();
+        });
+      }
+
+      syncFaviconColorUI();
+
+      ["dragenter", "dragover"].forEach((eventName) => {
+        if (uploadZone) {
+          uploadZone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            uploadZone.classList.add("dragover");
+          });
+        }
+      });
+
+      ["dragleave", "drop"].forEach((eventName) => {
+        if (uploadZone) {
+          uploadZone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            uploadZone.classList.remove("dragover");
+          });
+        }
+      });
+
+      if (uploadZone) {
+        uploadZone.addEventListener("drop", async (event) => {
+          const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+          if (file && file.name) {
+            setStatus(`File dropped: ${file.name}. Loading...`);
+          }
+          await handleSelectedFile(file);
+        });
+      }
+
+      if (uploadZone) {
+        uploadZone.addEventListener("click", (event) => {
+          if (!svgInput) return;
+          if (event.target.closest("button") || event.target.closest("input")) return;
+          svgInput.click();
+        });
+      }
+
+      if (downloadPng) {
+        downloadPng.addEventListener("click", async () => {
+          if (!currentDataUrl) return;
+          // Desktop app: route export through native save dialog.
+          if (hasNativePngExport) {
+            const oldText = downloadPng.textContent;
+            downloadPng.disabled = true;
+            downloadPng.textContent = "Saving PNG...";
+            try {
+              const pngDataUrl = await rasterizeToPngDataUrl(1024);
+              const result = await bridge.exportPng({
+                pngDataUrl,
+                fileName: `${currentFilename}-1024.png`,
+                appName: currentFilename,
+              });
+              if (result && result.canceled) {
+                setStatus("PNG export canceled.");
+              } else if (result && result.filePath) {
+                setStatus(`PNG ready: ${result.filePath}`);
+              } else {
+                setStatus("PNG export failed.", true, true);
+              }
+            } catch (error) {
+              setStatus(`PNG export failed: ${error.message || "Unknown error"}`, true, true);
+            } finally {
+              downloadPng.textContent = oldText;
+              downloadPng.disabled = !currentDataUrl;
+            }
+            return;
+          }
+
+          // Browser fallback: trigger a client-side download link.
+          exportPng(1024).catch(() => {
+            setStatus("Export failed. Please verify the SVG can be rendered.", true, true);
+          });
+        });
+      }
+
+      if (downloadMacDmg) downloadMacDmg.addEventListener("click", async () => {
+        if (!currentDataUrl) return;
+        if (!hasNativeDmgExport) {
+          setStatus("DMG export is available in desktop app only.", true, true);
+          return;
+        }
+
+        const oldText = downloadMacDmg.textContent;
+        downloadMacDmg.disabled = true;
+        downloadMacDmg.textContent = "Building DMG...";
+        try {
+          const pngDataUrl = await rasterizeToPngDataUrl(1024);
+          const result = await bridge.exportMacDmg({
+            pngDataUrl,
+            appName: currentFilename,
+          });
+          if (result && result.canceled) {
+            setStatus("DMG export canceled.");
+          } else if (result && result.filePath) {
+            setStatus(`DMG ready: ${result.filePath}`);
+          } else {
+            setStatus("DMG export failed.", true, true);
+          }
+        } catch (err) {
+          setStatus(`DMG export failed: ${err.message || "Unknown error"}`, true, true);
+        } finally {
+          downloadMacDmg.textContent = oldText;
+          downloadMacDmg.disabled = !currentDataUrl || !hasNativeDmgExport;
+        }
+      });
+
+      if (resetBtn) {
+        resetBtn.addEventListener("click", () => {
+          if (svgInput) svgInput.value = "";
+          currentDataUrl = "";
+          currentFilename = "icon";
+          clearObjectUrl();
+          resetView();
+        });
+      }
+
+      if (!hasDesktopBridge) {
+        if (downloadMacDmg) downloadMacDmg.title = "Desktop app only";
+      }
+
+      setStatus(`Ready (${BUILD_TAG}) · Desktop bridge: ${hasDesktopBridge ? "OK" : "Missing"}`);
+
+      window.addEventListener("beforeunload", clearObjectUrl);
+      window.addEventListener("error", (event) => {
+        if (!event || !event.message) return;
+        setStatus(`Runtime error: ${event.message}`, true, true);
+      });
+      window.addEventListener("unhandledrejection", (event) => {
+        const reason = event && event.reason;
+        const message = reason && reason.message ? reason.message : String(reason || "Unknown rejection");
+        setStatus(`Runtime rejection: ${message}`, true, true);
+      });
+    </script>
+  </body>
+</html>
