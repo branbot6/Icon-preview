@@ -12,7 +12,6 @@ A native macOS app (Swift + AppKit + WKWebView) for previewing SVG icons in mult
   - iOS app icon contexts
 - Export **1024x1024 PNG** with native save dialog
 - Export **macOS DMG** (auto-generates `.icns` + app bundle)
-- Open GitHub / LinkedIn links in external browser from desktop app
 
 ## Requirements
 
@@ -22,7 +21,7 @@ A native macOS app (Swift + AppKit + WKWebView) for previewing SVG icons in mult
 ## Quick Start
 
 ```bash
-cd /Users/brandonbot/Desktop/native-macos
+cd <repo-folder>
 swift build
 swift run IconPreviewLabNative
 ```
@@ -54,4 +53,3 @@ native-macos/
 rm -rf .build
 swift build
 ```
-
