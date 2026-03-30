@@ -4,7 +4,9 @@ A native macOS app (Swift + AppKit + WKWebView) for previewing SVG icons in mult
 
 ## Download
 
-- Latest release: [Download from GitHub Releases](https://github.com/branbot6/Icon-preview/releases/latest)
+- [Download DMG (Latest)](https://github.com/branbot6/Icon-preview/releases/latest/download/branai-icon-preview-lab-latest.dmg)
+- SHA256: [branai-icon-preview-lab-latest.dmg.sha256](https://github.com/branbot6/Icon-preview/releases/latest/download/branai-icon-preview-lab-latest.dmg.sha256)
+- Release page (optional): [GitHub Releases](https://github.com/branbot6/Icon-preview/releases/latest)
 - Release assets include:
   - `*.dmg`
   - `*.dmg.sha256`
@@ -12,7 +14,7 @@ A native macOS app (Swift + AppKit + WKWebView) for previewing SVG icons in mult
 Verify checksum:
 
 ```bash
-shasum -a 256 "Icon Preview Lab-<version>-native-arm64.dmg"
+shasum -a 256 "branai-icon-preview-lab-latest.dmg"
 ```
 
 ## Features

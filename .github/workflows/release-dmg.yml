@@ -39,10 +39,17 @@ jobs:
         run: |
           DMG_PATH="$(ls -1 dist/*.dmg | head -n 1)"
           APP_PATH="$(ls -1d dist/*.app | head -n 1)"
+          LATEST_DMG_PATH="dist/branai-icon-preview-lab-latest.dmg"
+
+          cp "$DMG_PATH" "$LATEST_DMG_PATH"
           echo "dmg_path=$DMG_PATH" >> "$GITHUB_OUTPUT"
           echo "app_path=$APP_PATH" >> "$GITHUB_OUTPUT"
           echo "dmg_name=$(basename "$DMG_PATH")" >> "$GITHUB_OUTPUT"
+          echo "latest_dmg_path=$LATEST_DMG_PATH" >> "$GITHUB_OUTPUT"
+          echo "latest_dmg_name=$(basename "$LATEST_DMG_PATH")" >> "$GITHUB_OUTPUT"
+
           shasum -a 256 "$DMG_PATH" > "$DMG_PATH.sha256"
+          shasum -a 256 "$LATEST_DMG_PATH" > "$LATEST_DMG_PATH.sha256"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -51,6 +58,8 @@ jobs:
           path: |
             ${{ steps.artifacts.outputs.dmg_path }}
             ${{ steps.artifacts.outputs.dmg_path }}.sha256
+            ${{ steps.artifacts.outputs.latest_dmg_path }}
+            ${{ steps.artifacts.outputs.latest_dmg_path }}.sha256
           if-no-files-found: error
 
       - name: Resolve release tag
@@ -77,18 +86,24 @@ jobs:
             gh release upload "$TAG" \
               "${{ steps.artifacts.outputs.dmg_path }}" \
               "${{ steps.artifacts.outputs.dmg_path }}.sha256" \
+              "${{ steps.artifacts.outputs.latest_dmg_path }}" \
+              "${{ steps.artifacts.outputs.latest_dmg_path }}.sha256" \
               --clobber
           else
             if [[ -f "$NOTES_FILE" ]]; then
               gh release create "$TAG" \
                 "${{ steps.artifacts.outputs.dmg_path }}" \
                 "${{ steps.artifacts.outputs.dmg_path }}.sha256" \
+                "${{ steps.artifacts.outputs.latest_dmg_path }}" \
+                "${{ steps.artifacts.outputs.latest_dmg_path }}.sha256" \
                 --title "$TITLE" \
                 --notes-file "$NOTES_FILE"
             else
               gh release create "$TAG" \
                 "${{ steps.artifacts.outputs.dmg_path }}" \
                 "${{ steps.artifacts.outputs.dmg_path }}.sha256" \
+                "${{ steps.artifacts.outputs.latest_dmg_path }}" \
+                "${{ steps.artifacts.outputs.latest_dmg_path }}.sha256" \
                 --title "$TITLE" \
                 --generate-notes
             fi

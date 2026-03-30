@@ -9,6 +9,9 @@
 ### Download
 - macOS DMG: attached asset (`*.dmg`)
 - Checksum: attached asset (`*.dmg.sha256`)
+- Direct-download alias:
+  - `branai-icon-preview-lab-latest.dmg`
+  - `branai-icon-preview-lab-latest.dmg.sha256`
 
 ### Verification
 ```bash
