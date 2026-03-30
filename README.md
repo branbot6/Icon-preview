@@ -1,4 +1,4 @@
-# BranAI Icon Preview Lab (Native macOS)
+# BranAI-Icon Preview Lab (Native macOS)
 
 A native macOS app (Swift + AppKit + WKWebView) for previewing SVG icons in multiple platform contexts and exporting deliverables.
 
