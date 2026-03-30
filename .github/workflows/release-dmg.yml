@@ -1,0 +1,95 @@
+name: Build macOS DMG
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (e.g. v1.2.0). Optional for manual dry-run."
+        required: false
+        type: string
+      publish_release:
+        description: "Create/update GitHub Release and upload DMG"
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build app and DMG
+        run: |
+          chmod +x scripts/build_app.sh
+          scripts/build_app.sh
+
+      - name: Resolve artifacts
+        id: artifacts
+        run: |
+          DMG_PATH="$(ls -1 dist/*.dmg | head -n 1)"
+          APP_PATH="$(ls -1d dist/*.app | head -n 1)"
+          echo "dmg_path=$DMG_PATH" >> "$GITHUB_OUTPUT"
+          echo "app_path=$APP_PATH" >> "$GITHUB_OUTPUT"
+          echo "dmg_name=$(basename "$DMG_PATH")" >> "$GITHUB_OUTPUT"
+          shasum -a 256 "$DMG_PATH" > "$DMG_PATH.sha256"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-dmg
+          path: |
+            ${{ steps.artifacts.outputs.dmg_path }}
+            ${{ steps.artifacts.outputs.dmg_path }}.sha256
+          if-no-files-found: error
+
+      - name: Resolve release tag
+        id: release
+        run: |
+          TAG=""
+          if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
+            TAG="${GITHUB_REF_NAME}"
+          elif [[ -n "${{ github.event.inputs.tag || '' }}" ]]; then
+            TAG="${{ github.event.inputs.tag }}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub Release assets
+        if: ${{ steps.release.outputs.tag != '' && (github.event_name == 'push' || github.event.inputs.publish_release == 'true') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.release.outputs.tag }}"
+          TITLE="BranAI Icon Preview Lab ${TAG}"
+          NOTES_FILE=".github/RELEASE_TEMPLATE.md"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" \
+              "${{ steps.artifacts.outputs.dmg_path }}" \
+              "${{ steps.artifacts.outputs.dmg_path }}.sha256" \
+              --clobber
+          else
+            if [[ -f "$NOTES_FILE" ]]; then
+              gh release create "$TAG" \
+                "${{ steps.artifacts.outputs.dmg_path }}" \
+                "${{ steps.artifacts.outputs.dmg_path }}.sha256" \
+                --title "$TITLE" \
+                --notes-file "$NOTES_FILE"
+            else
+              gh release create "$TAG" \
+                "${{ steps.artifacts.outputs.dmg_path }}" \
+                "${{ steps.artifacts.outputs.dmg_path }}.sha256" \
+                --title "$TITLE" \
+                --generate-notes
+            fi
+          fi

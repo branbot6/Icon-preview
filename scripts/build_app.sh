@@ -2,29 +2,27 @@
 set -euo pipefail
 
 NATIVE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-PROJECT_ROOT="$(cd "$NATIVE_DIR/.." && pwd)"
 APP_NAME="Icon Preview Lab"
 EXEC_NAME="IconPreviewLabNative"
 OUT_DIR="$NATIVE_DIR/dist"
 APP_DIR="$OUT_DIR/$APP_NAME.app"
 STAGE_DIR="$OUT_DIR/stage"
-RESOURCE_DIR="$NATIVE_DIR/Sources/IconPreviewLabNative/Resources"
+ROOT_ICON_SOURCE="$NATIVE_DIR/ip-icon.icns"
 
-if command -v node >/dev/null 2>&1; then
-  VERSION="$(node -p "require('$PROJECT_ROOT/package.json').version" 2>/dev/null || echo "1.1.0")"
+if [[ -n "${VERSION:-}" ]]; then
+  VERSION="$VERSION"
+elif command -v git >/dev/null 2>&1; then
+  TAG_VERSION_RAW="$(git -C "$NATIVE_DIR" describe --tags --abbrev=0 2>/dev/null || true)"
+  TAG_VERSION="$(echo "$TAG_VERSION_RAW" | sed 's/^v//')"
+  VERSION="${TAG_VERSION:-1.1.0}"
 else
   VERSION="1.1.0"
 fi
 
 DMG_PATH="$OUT_DIR/$APP_NAME-$VERSION-native-arm64.dmg"
-ICON_SOURCE="$PROJECT_ROOT/ip-icon.icns"
+ICON_SOURCE="$ROOT_ICON_SOURCE"
 
 mkdir -p "$OUT_DIR"
-
-cp "$PROJECT_ROOT/index.html" "$RESOURCE_DIR/index.html"
-cp "$PROJECT_ROOT/branai-logo.svg" "$RESOURCE_DIR/branai-logo.svg"
-cp "$PROJECT_ROOT/branai-icon.svg" "$RESOURCE_DIR/branai-icon.svg"
-cp "$PROJECT_ROOT/ip-icon-1024.png" "$RESOURCE_DIR/ip-icon-1024.png"
 
 swift build --configuration release --package-path "$NATIVE_DIR"
 
